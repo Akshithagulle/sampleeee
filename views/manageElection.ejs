@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="<%= csrfToken %>" />
+    <link href="/css/styles.css" rel="stylesheet">
+    <title>Online Voting Manager</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+    <%- include('header.ejs') %>
+    <div class="grid grid-cols-6">
+        <div class="col-start-2 col-span-3">
+            <h1 class="text-2xl py-4 centerElement"><%= electionTitle %></h1>
+            <% if(messages && messages.error && messages.error.length > 0)  { %>
+                <% for(var i=0; i<messages.error.length; i++) { %>
+                        <p class="flash-error"> <%= messages.error[i] %></p>
+                <% } %>
+              <% } %>
+            <h3 class="text-lg py-2">Share this URL with the voters: <a class="text-green-600" href="/vote/election/<%= electionId %>">online-voting-sj3r.onrender.com/vote/election/<%= electionId %></a></h3>
+            <h3 class="text-lg py-2 centerElement">Or</h3>
+            <% if(customURL == null) { %>
+                <form action="/addCustomURL" method="post">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                    <input type="hidden" name="electionId" value="<%= electionId %>">
+                    <label for="customURL">Create Custom URL: <p class="text-small">online-voting-sj3r.onrender.com/vote/election/</p></label>
+                    <input type="text" name="customURL" class="border border-gray-300 rounded p-2 w-full inline" required>
+                    <div class="centerElement py-2">
+                        <button type="submit" class="text-white bg-green-600 hover:bg-green-800 font-medium rounded px-5 py-2">Use this URL</button>
+                    </div>
+                </form>
+            <% } else { %>
+                <h3 class="text-lg py-2">Share this URL with the voters: <a class="text-green-600" href="/vote/election/<%= customURL.customURL %>">online-voting-sj3r.onrender.com/vote/election/<%= customURL.customURL %></a></h3>
+            <% } %>
+            <div>
+                <p class="text-green-600 text-lg py-6"><a href="/elections/manage/<%= electionId %>/manageVoters">Manage Voters</a></p>
+                <p class="text-green-600 text-lg py-6"><a href="/elections/manage/<%= electionId %>/manageQuestions">Manage Questions</a></p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="csrf-token" content="<%= csrfToken %>">
+  <link rel="stylesheet" href="/css/styles.css">
+  <title><%=title%></title>
+</head>
+<body>
+  <div class="flex justify-between items-center bg-blue-500">
+    <p class="text-3xl ml-5 font-medium text-white"><%=election.name%></p>
+    <div class="flex items-center">
+      <%if(voter){%>
+        <a href="/login" class="text-2xl my-4 mr-5 text-white bg-blue-900 rounded-xl p-2 w-56 text-center">Admin Login</a>
+        <%if(voterSignIn){%>
+          <a href="<%=election.id%>/voter-login" class="text-2xl my-4 mr-5 text-white bg-blue-900 rounded-xl p-2 w-56 text-center">Sign In</a>
+        <%}%>
+        <%if(voterSignOut){%>
+          <a href="<%=election.id%>/signout" class="text-2xl my-4 mr-5 text-white bg-blue-900 rounded-xl p-2 w-56 text-center">Signout</a>
+      <%}}%>
+      <%if(admin){%>
+      <a href="/signout" class="text-2xl text-white bg-blue-900 rounded-xl p-2 w-56 text-center">Signout</a>
+      <a href="/home/user/settings"><img class="rounded-full my-2 mx-5" src="https://picsum.photos/70" alt="user image"></a>
+      <%}%>
+    </div>
+  </div>
+  <% if(messages && messages.error && messages.error.length > 0)  { %>
+    <% for(var i = 0; i < messages.error.length; i++) { %>
+      <p class="bg-green-400 m-5 rounded px-4 py-2"><%= messages.error[i] %></p>
+    <% } %>
+  <% } %>
+  <div class="m-5">
+    <div class="flex">
+      <div class="pr-5 mr-5 flex bg-gray-100 items-center text-gray-600 drop-shadow-lg">
+        <div class="p-4 font-semibold text-5xl">
+          <p class="pr-2 border-r-4"><%=voters.length%></p>
+        </div>
+        <div class="flex flex-col">
+          <p class="text-2xl font-semibold">Total Voters</p>
+          <p class="text-gray-500">Registered</p>
+        </div>
+      </div>
+      <div class="pr-5 mr-5 flex bg-gray-100 items-center text-gray-600 drop-shadow-lg">
+        <div class="p-4 font-semibold text-5xl">
+          <%const v_voters = voters.filter(voter => {if (voter.vote_casted == true) return true; return false;}).length%>
+          <p class="pr-2 border-r-4"><%=v_voters%></p>
+        </div>
+        <div class="flex flex-col">
+          <p class="text-2xl font-semibold">Total Voters</p>
+          <p class="text-gray-500">Voted</p>
+        </div>
+      </div>
+    </div>
+    <div class="bg-red-500 bg-orange-500 bg-amber-500 bg-blue-500 bg-pink-500 bg-rose-500 bg-violet-500 bg-lime-500 bg-indigo-500 bg-emerald-500"></div>
+    <%const colorArr = ["red", "orange", "amber", "blue", "pink", "rose", "violet", "lime", "indigo", "emerald"];%>
+    <%for(let i = 0; i<question.length; i++){%>
+      <div class="flex flex-col justify-start p-5 my-5 text-gray-600 bg-gray-100 drop-shadow-lg">
+        <p class="text-2xl font-semibold"><%=i+1%>) <%=question[i].name%></p>
+        <p class="text-sm mx-7"><%=question[i].description%></p>
+        <div class="flex flex-col my-5 w-11/12">
+        <%let res;%>
+        <%let res2;%>
+        <%for(let j = 0; j<options[i].length; j++){%>
+          <%if(voter){%>
+          <%if(vote_casted){%>
+            <%res = objKeys.findIndex(k => {return parseInt(k) == question[i].id})%>
+            <%if (options[i][j].id == parseInt(objValues[res])) {res2 = options[i][j].option_name}%>
+          <%}}%>
+          <div class="flex items-center">
+            <div class="flex items-center text-center ml-5 mb-5 bg-zinc-200 text-white w-10/12 overflow-hidden rounded-lg">
+              <%let pcent = 0; if(v_voters !== 0) {pcent = options[i][j].votes/v_voters * 100}%>
+              <div class="flex justify-between py-2 text-lg bg-<%=colorArr[Math.floor(Math.random() * 10)]%>-500" style="width: <%=pcent%>%;">
+                <p class="px-2"><%=options[i][j].option_name%></p>
+                <p class="pr-2"><%=Math.round(pcent)%>%</p>
+              </div>
+            </div>
+            <div class="ml-5 mb-5 py-2 px-5 bg-amber-500 font-semibold text-white text-center text-lg rounded w-1/12"><%=options[i][j].votes%></div>
+          </div>
+        <%}%>
+        <%if(voter){%>
+        <%if(vote_casted){%>
+          <div>
+            <span class="text-gray-600 font-semibold">Your Choice:</span>
+            <span><%=res2%></span>
+          </div>
+        <%}}%>
+        </div>
+      </div>
+    <%}%>
+  </div>
+  <%if (admin) {%>
+  <div class="flex items-center justify-start m-5">
+    <a href="/home/election/<%=election.id%>" class="text-xl text-white bg-blue-800 rounded-xl p-2 mr-5 text-center w-40">Back</a>
+  </div>
+  <%}%>
+</body>
+</html>

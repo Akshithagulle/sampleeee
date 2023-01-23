@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="csrf-token" content="<%= csrfToken %>">
+  <link rel="stylesheet" href="/css/styles.css">
+  <title><%=title%></title>
+</head>
+<body>
+  <div class="flex justify-between items-center bg-blue-500">
+    <p class="text-3xl ml-5 font-medium text-white"><%=election.name%></p>
+    <div class="flex items-center">
+      <a href="<%=election.id%>/signout" class="text-2xl text-white bg-blue-900 rounded-xl p-2 w-56 text-center">Signout</a>
+      <img class="rounded-full my-2 mx-5" src="https://via.placeholder.com/70" alt="user image">
+    </div>
+  </div>
+  <% if(messages && messages.error && messages.error.length > 0)  { %>
+    <% for(var i = 0; i < messages.error.length; i++) { %>
+      <p class="bg-green-400 m-5 rounded px-4 py-2"><%= messages.error[i] %></p>
+    <% } %>
+  <% } %>
+  <form class="m-5" id="election-form" action="./<%=election.id%>" method="post">
+    <input type="hidden" name="_csrf" value="<%=csrfToken%>">
+    <%for(let i = 0; i<question.length; i++){%>
+      <div class="flex flex-col justify-start p-5 my-5 text-gray-600 bg-gray-100 drop-shadow-lg">
+        <p class="text-2xl font-semibold"><%=i+1%>) <%=question[i].name%></p>
+        <p class="text-sm mx-7"><%=question[i].description%></p>
+        <div class="flex my-5">
+        <%let res;%>
+        <%let res2;%>
+        <%for(let j = 0; j<options[i].length; j++) {%>
+          <%if(vote_casted){%>
+            <%res = objKeys.findIndex(k => {return parseInt(k) == question[i].id})%>
+            <%if (options[i][j].id == parseInt(objValues[res])) {res2 = options[i][j].option_name}%>
+          <%}%>
+          <div class="flex items-center ml-5 pl-4 border-gray-300 border-2 w-60">
+            <input type="radio" name="<%=question[i].id%>" id="<%=options[i][j].id%>" value="<%=options[i][j].id%>" class="w-5 h-5">
+            <label for="<%=options[i][j].id%>" class="ml-2 pr-4 py-2 w-full text-lg"><%=options[i][j].option_name%></label>
+          </div>
+        <%}%>
+      </div>
+      <%if(vote_casted){%>
+        <div>
+          <span class="text-gray-600 font-semibold">Your Choice:</span>
+          <span><%=res2%></span>
+        </div>
+      <%}%>
+      </div>
+    <%}%>
+  </form>
+  <%if(!vote_casted){%>
+  <div class="flex items-center justify-start m-5">
+    <button type="submit" form="election-form" class="text-xl text-white bg-blue-800 rounded-xl p-2 mr-5 text-center w-40">Submit</button>
+  </div>
+  <%}%>
+</body>
+</html>
